@@ -249,4 +249,32 @@ class FirestoreDatabaseResource
 
         return count($response) === 0 ? true : false;
     }
+		
+		/**
+     * Run a Structured Query on a collection path given
+     *
+     * @param string $documentPath
+     * @param array $query
+     * @param array $parameters
+     * @param array $options
+     *
+     * @return array
+     */
+		public function runQuery($documentPath, $query, array $parameters = [], array $options = [])
+		{
+				// Note: $parameters are appended URL parameters, and $options is request body (useful for POST)
+				
+				// document path that contains a (sub)collection (e.g. blank "", or "collection1/documentWithSubCollection")
+				$this->validatePath($documentPath);
+				
+				$urlPath = 'documents/' . FirestoreHelper::normalizeCollection($documentPath) . ':runQuery';
+				
+				$response = $this->client->request('POST', $urlPath, array_merge($options, [
+						'json' => [
+								'structuredQuery' => $query
+						]
+				]), $parameters);
+				
+				return $response;
+		}
 }
